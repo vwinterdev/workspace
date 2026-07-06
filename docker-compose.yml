@@ -6,19 +6,10 @@ services:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
       - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --entrypoints.web.http.redirections.entrypoint.to=websecure
-      - --entrypoints.web.http.redirections.entrypoint.scheme=https
-      - --certificatesresolvers.letsencrypt.acme.httpchallenge=true
-      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
-      - --certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}
-      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - letsencrypt:/letsencrypt
     networks:
       - web
 
@@ -36,8 +27,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.work-db.rule=Host(`${DOMAIN}`) && PathPrefix(`/db`)
-      - traefik.http.routers.work-db.entrypoints=websecure
-      - traefik.http.routers.work-db.tls.certresolver=letsencrypt
+      - traefik.http.routers.work-db.entrypoints=web
       - traefik.http.routers.work-db.middlewares=work-db-stripprefix
       - traefik.http.middlewares.work-db-stripprefix.stripprefix.prefixes=/db
       - traefik.http.services.work-db.loadbalancer.server.port=3000
@@ -58,8 +48,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.work-db-mcp.rule=Host(`${DOMAIN}`) && PathPrefix(`/mcp/db`)
-      - traefik.http.routers.work-db-mcp.entrypoints=websecure
-      - traefik.http.routers.work-db-mcp.tls.certresolver=letsencrypt
+      - traefik.http.routers.work-db-mcp.entrypoints=web
       - traefik.http.routers.work-db-mcp.middlewares=work-db-mcp-stripprefix
       - traefik.http.middlewares.work-db-mcp-stripprefix.stripprefix.prefixes=/mcp/db
       - traefik.http.services.work-db-mcp.loadbalancer.server.port=3000
@@ -67,6 +56,3 @@ services:
 networks:
   web:
     driver: bridge
-
-volumes:
-  letsencrypt:
