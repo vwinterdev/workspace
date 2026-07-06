@@ -1,0 +1,24 @@
+{
+  "name": "schemas",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "db:generate": "dotenv -e ../../.env -- drizzle-kit generate",
+    "db:migrate": "dotenv -e ../../.env -- drizzle-kit migrate",
+    "db:studio": "dotenv -e ../../.env -- drizzle-kit studio"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.36.4",
+    "postgres": "^3.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "dotenv-cli": "^7.4.4",
+    "drizzle-kit": "^0.28.1",
+    "typescript": "^5.7.2"
+  }
+}
